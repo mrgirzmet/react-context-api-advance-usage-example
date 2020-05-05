@@ -1,3 +1,8 @@
+In this project, I have multiple contexts and I am sharing all of them with my View Components, each view component can achieve any state in my store without having uncessary re-renders or boilerplates on view components.
+
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
