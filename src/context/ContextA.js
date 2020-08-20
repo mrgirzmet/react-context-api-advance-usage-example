@@ -7,7 +7,7 @@ import useInterval from '@use-it/interval';
 
 const faker = require('faker');
 
-const DUMMY_DATA_SIZE = 100000;
+const DUMMY_DATA_SIZE = 50000;
 const DELAY = 50;
 
 
@@ -35,13 +35,11 @@ function ContextAProvider(props) {
 
   useInterval(() => {
     const randomNumber = getRndInteger(0, treeDataA.length);
-    const name = faker.name.firstName();
-    const treeData = treeDataA;
-    treeData[randomNumber] = {
-      title: name,
+    treeDataA[randomNumber] = {
+      title: `${treeDataA[randomNumber].title} ad`,
       children: [],
     };
-    setTreeDataA([...treeData]);
+    setTreeDataA([...treeDataA]);
   }, DELAY);
 
   return (
