@@ -23,7 +23,7 @@
   margin:20px;
 }
 .Container-header { 
-  display: flex;
+  display: flexbox;
   flex-direction: row;
 }
 
@@ -31,9 +31,7 @@
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  /* align-items: center; */
-  /* justify-content: center; */
+  flex-direction: row;
   font-size: calc(10px + 2vmin);
   color: #61dafb;
 }

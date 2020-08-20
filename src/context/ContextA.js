@@ -1,19 +1,52 @@
 /* eslint-disable valid-typeof */
-/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/jsx-filename-extension */
 import React, { useState, useContext } from 'react';
+import useInterval from '@use-it/interval';
+
+const faker = require('faker');
+
+const DUMMY_DATA_SIZE = 100000;
+const DELAY = 50;
+
 
 const StateContextA = React.createContext();
 const MutatorContextA = React.createContext();
 
+const prepareDummyData = (dataSize) => {
+  const treeData = [];
+  for (let i = 0; i < dataSize; i += 1) {
+    const name = faker.name.firstName();
+    treeData.push(
+      {
+        title: name,
+        children: [],
+      },
+    );
+  }
+  return treeData;
+};
+const getRndInteger = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+
+
 function ContextAProvider(props) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [companyName, setCompanyName] = useState('');
+  const [treeDataA, setTreeDataA] = useState(prepareDummyData(DUMMY_DATA_SIZE));
+
+  useInterval(() => {
+    const randomNumber = getRndInteger(0, treeDataA.length);
+    const name = faker.name.firstName();
+    const treeData = treeDataA;
+    treeData[randomNumber] = {
+      title: name,
+      children: [],
+    };
+    setTreeDataA([...treeData]);
+  }, DELAY);
+
   return (
-    <StateContextA.Provider value={{ name, email, companyName }}>
-      <MutatorContextA.Provider value={{ setName, setEmail, setCompanyName }}>
+    <StateContextA.Provider value={{ treeDataA }}>
+      <MutatorContextA.Provider value={{ setTreeDataA }}>
         {props.children}
       </MutatorContextA.Provider>
     </StateContextA.Provider>

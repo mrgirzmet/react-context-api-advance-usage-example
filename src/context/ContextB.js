@@ -4,16 +4,30 @@
 /* eslint-disable react/jsx-filename-extension */
 import React, { useState, useContext } from 'react';
 
+const faker = require('faker');
+
 const StateContextB = React.createContext();
 const MutatorContextB = React.createContext();
 
-function ContextBProvider(props) {
-  const [surname, setSurname] = useState('');
-  const [gender, setGender] = useState('');
+const prepareDummyData = (dataSize) => {
+  const treeData = [];
+  for (let i = 0; i < dataSize; i += 1) {
+    const name = faker.name.firstName();
+    treeData.push(
+      {
+        title: name,
+        children: [],
+      },
+    );
+  }
+  return treeData;
+};
 
+function ContextBProvider(props) {
+  const [treeDataB, setTreeDataB] = useState(prepareDummyData(10));
   return (
-    <StateContextB.Provider value={{ surname, gender }}>
-      <MutatorContextB.Provider value={{ setSurname, setGender }}>
+    <StateContextB.Provider value={{ treeDataB }}>
+      <MutatorContextB.Provider value={{ setTreeDataB }}>
         {props.children}
       </MutatorContextB.Provider>
     </StateContextB.Provider>
