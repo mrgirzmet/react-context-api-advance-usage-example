@@ -1,0 +1,120 @@
+import React, { useState, useContext, createContext, memo } from 'react';
+
+const StateContextPopUpModal = createContext();
+const MutatorContextPopUpModal = createContext();
+
+/**
+ * This layer is needed to use
+ * MutatorProvider in common and easy way,
+ * value={{ a , b, c }}
+ * if we dont use this layer, this `value` is not flat object and thats why
+ * memo() cannot memoize them directly, here our memoization target is a,b,c not `value`
+ * and we can of course delete this layer and call provider
+ * in this way,
+ * <MemoizedStateContextProvider a={a} b={b} c={c} />
+ * For example, in StateProvider() method we take values as map object and we turn them in to flat object,
+ * and then we force them to be memoized inside `MemoizedStateContextProvider`
+ * finally we return provider method of ContextAPI
+ **/
+const MemoizedStateContextProvider = memo(({ children, ...states }) => (
+  <StateContextPopUpModal.Provider value={states}>
+    {children}
+  </StateContextPopUpModal.Provider>
+));
+
+const MemoizedMutatorContextProvider = memo(({ children, ...mutators }) => (
+  <MutatorContextPopUpModal.Provider value={mutators}>
+    {children}
+  </MutatorContextPopUpModal.Provider>
+));
+
+const StateProvider = ({ children, value }) => (
+  <MemoizedStateContextProvider {...value}>
+    {children}
+  </MemoizedStateContextProvider>
+);
+
+const MutatorProvider = ({ children, value }) => (
+  <MemoizedMutatorContextProvider {...value}>
+    {children}
+  </MemoizedMutatorContextProvider>
+);
+
+function ContextPopUpModalProvider(props) {
+  const [isModalVisible, setModelVisibility] = useState(false);
+  const [onCloseModalAction, setOnCloseModelAction] = useState(() => {});
+  const [disablePortal, setDisablePortal] = useState(false);
+  const [disableEnforceFocus, setDisableEnforceFocus] = useState(false);
+  const [disableAutoFocus, setDisableAutoFocus] = useState(false);
+  const [modalClasses, setModalClasses] = useState('');
+  const [modalContent, setModalContent] = useState(<div></div>);
+
+  // const handleClose = (_, reason) => {
+  //   if (reason === 'clickaway') {
+  //     return;
+  //   }
+  //   // clearAllState();
+  // };
+
+  // const clearAllState = () => {
+  //   setModelVisibility(false);
+  //   setModalHeight(0);
+  //   setModalWidth(0);
+  //   setDisablePortal(false);
+  //   setDisableEnforceFocus(false);
+  //   setDisableAutoFocus(false);
+  //   setOnCloseModelAction(undefined);
+  // };
+
+  return (
+    <StateProvider
+      value={{
+        isModalVisible,
+        onCloseModalAction,
+        disableAutoFocus,
+        disableEnforceFocus,
+        disablePortal,
+        modalClasses,
+        modalContent,
+      }}>
+      <MutatorProvider
+        value={{
+          setModelVisibility,
+          setOnCloseModelAction,
+          setDisablePortal,
+          setDisableEnforceFocus,
+          setDisableAutoFocus,
+          setModalContent,
+          setModalClasses,
+        }}>
+        {props.children}
+      </MutatorProvider>
+    </StateProvider>
+  );
+}
+
+function useContextPopUpModalState() {
+  const stateContextPopUpModal = useContext(StateContextPopUpModal);
+  if (typeof stateContextPopUpModal === undefined) {
+    throw new Error(
+      'useContextPopUpModalState must be used within a useContextPopUpModalProvider'
+    );
+  }
+  return stateContextPopUpModal;
+}
+
+function useContextPopUpModalMutator() {
+  const mutatorContextPopUpModal = useContext(MutatorContextPopUpModal);
+  if (typeof mutatorContextPopUpModal === undefined) {
+    throw new Error(
+      'useContextPopUpModalMutator must be used within a useContextPopUpModalState'
+    );
+  }
+  return mutatorContextPopUpModal;
+}
+
+export {
+  ContextPopUpModalProvider,
+  useContextPopUpModalState,
+  useContextPopUpModalMutator,
+};
